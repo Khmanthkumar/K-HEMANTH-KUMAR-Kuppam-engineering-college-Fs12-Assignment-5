@@ -1,0 +1,70 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class DepartmentDAO {
+
+    // JDBC URL, username, and password of MySQL server
+    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/departments";
+    private static final String USERNAME = "your_username";
+    private static final String PASSWORD = "your_password";
+
+    // JDBC variables for opening, closing and managing connection
+    private static Connection connection;
+
+    // Insert query
+    private static final String INSERT_DEPARTMENT_QUERY = "INSERT INTO department (id, name) VALUES (?, ?)";
+
+    public static void main(String[] args) {
+        Department department = new Department(1, "HR");
+        saveDepartment(department);
+    }
+
+    public static void saveDepartment(Department department) {
+        try {
+            // Establishing a connection
+            connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+
+            // Creating a PreparedStatement object to execute query
+            PreparedStatement preparedStatement = connection.prepareStatement(INSERT_DEPARTMENT_QUERY);
+
+            // Setting parameters for PreparedStatement
+            preparedStatement.setInt(1, department.getId());
+            preparedStatement.setString(2, department.getName());
+
+            // Executing PreparedStatement to insert data into the database
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            // Checking the result of the insertion
+            if (rowsAffected > 0) {
+                System.out.println("Department inserted successfully.");
+            } else {
+                System.out.println("Failed to insert department.");
+            }
+
+            // Closing the connection
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+class Department {
+    private int id;
+    private String name;
+
+    public Department(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+}
